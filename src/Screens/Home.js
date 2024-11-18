@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -70,19 +70,6 @@ const CreateIncidentPopup = ({ isOpen, onClose }) => {
 
 const Home = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    navigate('/login');
-  };
 
   const userInfo = {
     nic: '123456789',
