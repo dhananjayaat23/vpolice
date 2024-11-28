@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useKeycloak } from '@react-keycloak/web';
+import axios from 'axios';
 
 const Signup = () => {
+  const { keycloak } = useKeycloak();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,10 +22,30 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add registration logic here
+    
+    try {
+      // First, register user in Keycloak
+      await keycloak.register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+      });
+
+      // Then store additional user data in your backend
+      const response = await axios.post('/api/users', {
+        ...formData,
+        keycloakId: keycloak.subject // Add Keycloak user ID
+      });
+
+      if (response.status === 200) {
+        // Redirect to login page after successful registration
+        keycloak.login();
+      }
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
   };
 
   return (
